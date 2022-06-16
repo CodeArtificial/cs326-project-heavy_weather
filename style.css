@@ -1,0 +1,13 @@
+body {
+    display: flex;
+    justify-content: center;
+}
+
+#weekdays {
+    width: 100%;
+    display: flex;
+}
+
+#weekdays div {
+    padding: 10px;
+}
