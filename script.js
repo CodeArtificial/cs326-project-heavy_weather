@@ -93,14 +93,25 @@ function render() {
         const div = document.createElement('div');
         div.classList.add('day');
 
+        const dateStr = `${month + 1}/${i - daysPad}/${year}`;
+
         // Filter padding days from actual day
         if (i > daysPad) {
             // Add date on block
             div.innerHTML = i - daysPad;
 
+            const event = events.find(e => e.date === dateStr);
+
+            if (event) {
+               const divEvent = document.createElement('div');
+               divEvent.classList.add('event');
+               divEvent.innerText = event.event;
+               div.appendChild(divEvent);
+            }
+
             // Add click event to create new event
             div.addEventListener('click', () => {
-                formOpen(`${month + 1}/${i - daysPad}/${year}`)
+                formOpen(dateStr);
             });
         } else {
             div.classList.add('padding-day');
