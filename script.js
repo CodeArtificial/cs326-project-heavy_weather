@@ -16,6 +16,7 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 const calendar = document.getElementById('calendar');
 const form = document.getElementById('form');
 const newEvent = document.getElementById('newEvent');
+const eventTitle = document.getElementById('eventTitle');
 
 function formOpen(date) {
     // Set the click event on the date
@@ -36,6 +37,26 @@ function formOpen(date) {
     form.style.display = 'block';
 }
 
+function formClose() {
+    eventTitle.value = '';
+    newEvent.style.display = 'none';
+    form.style.display = 'none';
+    clickEvent = null;
+    render();
+}
+
+function eventSave() {
+    if (eventTitle.value) {
+        eventTitle.classList.remove('400');
+
+        events.push({date: clicked, event: eventTitle.value});
+        localStorage.setItem('events', JSON.stringify(events));
+
+    } else {
+        eventTitle.classList.add('400');
+
+    }
+}
 // Function to render the page
 function render() {
     const date = new Date();
@@ -100,6 +121,9 @@ function button() {
         nav--;
         render();
     });
+    document.getElementById('next').addEventListener('click', eventSave);
+
+    document.getElementById('cancel').addEventListener('click', formClose);
 }
 
 button();
