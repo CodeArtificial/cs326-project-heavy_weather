@@ -57,6 +57,11 @@ function eventSave() {
 
     }
 }
+
+function eventDelete() {
+
+}
+
 // Function to render the page
 function render() {
     const date = new Date();
@@ -135,6 +140,8 @@ function button() {
     document.getElementById('next').addEventListener('click', eventSave);
 
     document.getElementById('cancel').addEventListener('click', formClose);
+
+    document.getElementById('delete').addEventListener('click')
 }
 
 button();
