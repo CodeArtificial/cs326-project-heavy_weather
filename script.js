@@ -17,6 +17,7 @@ const calendar = document.getElementById('calendar');
 const form = document.getElementById('form');
 const newEvent = document.getElementById('newEvent');
 const eventTitle = document.getElementById('eventTitle');
+const deleteEvent = document.getElementById('deleteEvent');
 
 function formOpen(date) {
     // Set the click event on the date
@@ -29,6 +30,9 @@ function formOpen(date) {
     if (event) {
         // Alert the user
         alert("Event already exist");
+        document.getElementById('eventTitle').innerText = event.event;
+        deleteEvent.style.display = 'block';
+
     } else { // Display the event
         newEvent.style.display = 'block';
     }
@@ -40,6 +44,7 @@ function formOpen(date) {
 function formClose() {
     eventTitle.value = '';
     newEvent.style.display = 'none';
+    deleteEvent.style.display = 'none';
     form.style.display = 'none';
     clickEvent = null;
     render();
@@ -59,6 +64,9 @@ function eventSave() {
 }
 
 function eventDelete() {
+    events = events.filter(x => x.date !== clickEvent);
+    localStorage.setItem('events', JSON.stringify(events));
+    formClose();
 
 }
 
