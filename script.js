@@ -6,9 +6,7 @@ let nav = 0;
 let clickEvent = null;
 
 // Array of events objects 
-let events = localStorage.getItem('events') 
-    ? JSON.parse(localStorage.getItem('event')) 
-    : [];
+let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 
 // Array to determine the padding days in a month
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -22,18 +20,19 @@ const deleteEvent = document.getElementById('deleteEvent');
 function formOpen(date) {
     // Set the click event on the date
     clickEvent = date;
-
+    
     // Find the event created based on date
-    const event = events.find(e => e.date === clickEvent);
+    const event = events.find(x => x.date === clickEvent);
 
     // If the event already exist in that date
     if (event) {
-        // Alert the user
-        alert("Event already exist");
-        document.getElementById('eventTitle').innerText = event.event;
+
+        document.getElementById('event').innerText = event.event;
+        
+        // Display deleting the existed form
         deleteEvent.style.display = 'block';
 
-    } else { // Display the event
+    } else { // Display the new event form
         newEvent.style.display = 'block';
     }
 
@@ -41,30 +40,47 @@ function formOpen(date) {
     form.style.display = 'block';
 }
 
+// Function that change the display of the form upon completion
 function formClose() {
+    console.log("gek");
+    // Reset the input field
     eventTitle.value = '';
+    // Hide the add event form
     newEvent.style.display = 'none';
+    // Hide the delete event form
     deleteEvent.style.display = 'none';
+    // Hide the form backdrop
     form.style.display = 'none';
+    // Reset the clicked date
     clickEvent = null;
+    // Remove the event class from the event
+    eventTitle.classList.remove('400');
+    // Rerender the interface
     render();
 }
 
+// Function to save event to local storage
 function eventSave() {
-    if (eventTitle.value) {
+    if (eventTitle.value) { // there is an input to the event prompt
+        // Delete error code 400
         eventTitle.classList.remove('400');
-
-        events.push({date: clicked, event: eventTitle.value});
+        // Push to the events array
+        events.push({date: clickEvent, event: eventTitle.value});
+        // Save to the local storage
         localStorage.setItem('events', JSON.stringify(events));
-
-    } else {
+        formClose();
+    } else { // there is no input
+        // Add error code 400
         eventTitle.classList.add('400');
 
     }
 }
 
+// Function to delete an event from the calendar
 function eventDelete() {
+    // Filter the deleted event out of the events array
     events = events.filter(x => x.date !== clickEvent);
+    // Save the events array to local storage
     localStorage.setItem('events', JSON.stringify(events));
     formClose();
 
@@ -113,8 +129,14 @@ function render() {
             // Add date on block
             div.innerHTML = i - daysPad;
 
-            const event = events.find(e => e.date === dateStr);
+            const event = events.find(x => x.date === dateStr);
 
+            // Add a class to the current day
+            if (nav === 0 && i - daysPad === day) {
+                div.classList.add('dayCur');
+            }
+
+            // If there is an event in th day, add to the day square
             if (event) {
                const divEvent = document.createElement('div');
                divEvent.classList.add('event');
@@ -145,11 +167,18 @@ function button() {
         nav--;
         render();
     });
-    document.getElementById('next').addEventListener('click', eventSave);
 
+    // Add clicked event to the save button -> save event
+    document.getElementById('save').addEventListener('click', eventSave);
+
+    // Add clicked event to the cancel button -> close form
     document.getElementById('cancel').addEventListener('click', formClose);
 
-    document.getElementById('delete').addEventListener('click')
+    // Add clicked event to the close button -> close form
+    document.getElementById('close').addEventListener('click', formClose);
+
+    // Add clicked event to the delete button -> event deletion 
+    document.getElementById('delete').addEventListener('click', eventDelete);
 }
 
 button();

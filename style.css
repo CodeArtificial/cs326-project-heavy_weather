@@ -35,15 +35,7 @@ body {
     display: none;
 }
 
-#deleteEvent {
-    display: none;
-}
-
 #form {
     display: none;
-}
-
-.dayCur {
-    background-color: green;
 }
 
