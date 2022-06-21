@@ -27,6 +27,8 @@ Each task is minimized to a block when dragged on the calendar and can be mamixi
 
 ## Product Progress:
 
+Video Demo: https://drive.google.com/file/d/18C7xvKtYqqhJsZeSpcWKZ2GPx2zrXeVo/view
+
 Upon visiting Allendar, the user will be greeted with a calendar at the center of the website.
 
 ![Calendar UI](./image/calendarUI.png)
@@ -51,4 +53,4 @@ A feature that is complement to the previous is an event-deleter, which allows t
 
 ![Event Delete2](./image/event_delete2.png)
 
-All events are saved in local storage and will not removed upon page refresh.
+All events are saved in local storage and will not removed upon page refresh.d
