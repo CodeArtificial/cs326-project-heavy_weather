@@ -1,14 +1,13 @@
 import express from 'express';
 import logger from 'morgan';
-import { Database } from './database';
+import { Database } from './database.js';
 
 const DATABASE_URL = "postgres://jegbssbvkhyjdl:0e2c7ce25fa24f96cb65d0b3dc74604f9e0914e975b8bcfa0d6b040a10312ab8@ec2-54-87-179-4.compute-1.amazonaws.com:5432/datvauq86hv760";
 
 class Server {
-    constructor() {
+    constructor(dburl) {
         this.dburl = dburl;
         this.app = express();
-        this.app.use('/', express.static('client'));
     }
 
     async initRoutes() {
@@ -42,10 +41,10 @@ class Server {
     async start() {
         await this.initRoutes();
         await this.initDB();
-        app.use(express.json());
-        app.use(express.urlencoded({ extended: false }));
-        app.use(logger('dev'));
-        app.use('/', express.static('client'));
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: false }));
+        this.app.use(logger('dev'));
+        this.app.use('/', express.static('client'));
         const port = process.env.PORT || 3000;
         this.app.listen(port, () => {
             console.log(`Server listening on port ${port}`);
@@ -55,3 +54,23 @@ class Server {
 
 const server = new Server(DATABASE_URL);
 server.start();
+
+// const app = express();
+// const port = process.env.PORT || 3000;
+
+// // TODO #3: Add middleware to the Express app.
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(logger('dev'));
+// app.use('/', express.static('client'));
+
+// // TODO #4: Implement the /wordScore endpoint
+// app.post('/createEvent', async (request, response) => {
+//   const { name, word, score } = request.body;
+// //   await database.saveWordScore(name, word, score);
+//   response.status(200).json({ status: 'success' });
+// });
+
+// app.listen(port, () => {
+//     console.log(`Server listening on port ${port}`);
+// });

@@ -13,9 +13,8 @@ export class Database {
             connectionString: this.dburl,
             ssl: { rejectUnauthorized: false },
         });
-
+    
         this.client = await this.pool.connect();
-
         await this.init();
     }
 
@@ -23,7 +22,7 @@ export class Database {
         const queryText = `
         create table if not exists event_record (
             event varchar(30),
-            date varchar(30),
+            date varchar(30)
         );`;
 
         const res = await this.client.query(queryText);
