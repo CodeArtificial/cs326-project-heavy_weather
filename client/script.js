@@ -1,3 +1,5 @@
+import { fetchEvents } from './calendar.js'; 
+
 // Navigation for the calendar depending on the month
 // +# = later months, 0 = current month, -# = previous months
 let nav = 0;
@@ -7,6 +9,11 @@ let clickEvent = null;
 
 // Array of events objects 
 let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
+
+
+// let events = [];
+
+
 
 // Array to determine the padding days in a month
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -131,6 +138,7 @@ function render() {
 
             const event = events.find(x => x.date === dateStr);
 
+            // const event = 
             // Add a class to the current day
             if (nav === 0 && i - daysPad === day) {
                 div.classList.add('dayCur');
