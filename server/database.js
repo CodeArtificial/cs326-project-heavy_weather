@@ -33,33 +33,34 @@ export class Database {
         await this.client.end();
     }
 
-    async createEvent(name, date) {
-        const queryText = 'INSERT INTO event_record (name, date) VALUES ($1, $2) RETURNING *';
-        const response = await this.client.query(queryText, [name, date]);
+    async createEvent(event, date) {
+        const queryText = 'INSERT INTO event_record (event, date) VALUES ($1, $2) RETURNING *';
+        const response = await this.client.query(queryText, [event, date]);
+        console.log("hello");
         return response.rows;
     }
 
-    async updateEventDate(name, date) {
-        const queryText = 'UPDATE event_record SET date = $2 WHERE name = $1 RETURNING *';
-        const respond = await this.client.query(queryText, [name, date]);
+    async updateEventDate(event, date) {
+        const queryText = 'UPDATE event_record SET date = $2 WHERE event = $1 RETURNING *';
+        const respond = await this.client.query(queryText, [event, date]);
         return respond.rows;
     }
 
-    async updateEventName(name, date) {
-        const queryText = 'UPDATE event_record SET name = $1 WHERE date = $2 RETURNING *';
-        const respond = await this.client.query(queryText, [name, date]);
+    async updateEventName(event, date) {
+        const queryText = 'UPDATE event_record SET event = $1 WHERE date = $2 RETURNING *';
+        const respond = await this.client.query(queryText, [event, date]);
         return respond.rows;
     }
 
-    async deleteEvent(name) {
-        const queryText = 'DELETE FROM event_record WHERE name = $1 RETURNING *';
-        const respond = await this.client.query(queryText, [name]);
+    async deleteEvent(event) {
+        const queryText = 'DELETE FROM event_record WHERE event = $1 RETURNING *';
+        const respond = await this.client.query(queryText, [event]);
         return respond.rows;
     }
 
-    async readEvent(name) {
-        const queryText = 'SELECT * FROM event_record WHERE name = $1';
-        const respond = await this.client.query(queryText, [name]);
+    async readEvent(event) {
+        const queryText = 'SELECT * FROM event_record WHERE event = $1';
+        const respond = await this.client.query(queryText, [event]);
         return respond.rows;
     }
 

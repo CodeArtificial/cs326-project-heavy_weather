@@ -1,4 +1,6 @@
-import { fetchEvents } from './calendar.js'; 
+import { fetchEvents } from './calendar.js';
+import {DATABASE_URL} from '../database_url';
+import {Database} from '../server/database';
 
 // Navigation for the calendar depending on the month
 // +# = later months, 0 = current month, -# = previous months
@@ -8,10 +10,11 @@ let nav = 0;
 let clickEvent = null;
 
 // Array of events objects 
-let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
+// let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 
 
-// let events = [];
+let events = fetchEvents.get();
+
 
 
 
@@ -27,7 +30,7 @@ const deleteEvent = document.getElementById('deleteEvent');
 function formOpen(date) {
     // Set the click event on the date
     clickEvent = date;
-    
+
     // Find the event created based on date
     const event = events.find(x => x.date === clickEvent);
 
@@ -35,7 +38,7 @@ function formOpen(date) {
     if (event) {
 
         document.getElementById('event').innerText = event.event;
-        
+
         // Display deleting the existed form
         deleteEvent.style.display = 'block';
 
@@ -49,7 +52,6 @@ function formOpen(date) {
 
 // Function that change the display of the form upon completion
 function formClose() {
-    console.log("gek");
     // Reset the input field
     eventTitle.value = '';
     // Hide the add event form
@@ -63,7 +65,7 @@ function formClose() {
     // Remove the event class from the event
     eventTitle.classList.remove('400');
     // Rerender the interface
-    render();
+    renderCalendar.render();
 }
 
 // Function to save event to local storage
@@ -72,7 +74,7 @@ function eventSave() {
         // Delete error code 400
         eventTitle.classList.remove('400');
         // Push to the events array
-        events.push({date: clickEvent, event: eventTitle.value});
+        events.push({ date: clickEvent, event: eventTitle.value });
         // Save to the local storage
         localStorage.setItem('events', JSON.stringify(events));
         formClose();
@@ -94,86 +96,99 @@ function eventDelete() {
 }
 
 // Function to render the page
-function render() {
-    const date = new Date();
-
-    if (nav !== 0) {
-        // Set to the new month based on nav
-        date.setMonth(new Date().getMonth() + nav);
+class Calendar {
+    constructor(dburl) {
+        this.dburl = dburl;
     }
 
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-
-    // Find the first day of month
-    const monthFirstDay = new Date(year, month, 1);
-
-    // Number of days in a month
-    const monthDays = new Date(year, month + 1, 0).getDate();
-
-    // string: "Weekdays, dd/mm/yyyy"
-    const fullDate = monthFirstDay.toLocaleDateString('en-us', {weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric'});
-    
-    // Number of padding days in a month
-    const daysPad = weekdays.indexOf(fullDate.split(', ')[0]);
-
-    // Display the month on the current calendar
-    document.getElementById('monthText').innerText = ` ${date.toLocaleDateString('en-us', {month: 'long'})} ${year}`;
-
-    // Refresh calendar blocks
-    calendar.innerHTML = '';
-
-    // Render the calendar squares
-    for (let i = 1; i <= daysPad + monthDays; i++) {
-        const div = document.createElement('div');
-        div.classList.add('day');
-
-        const dateStr = `${month + 1}/${i - daysPad}/${year}`;
-
-        // Filter padding days from actual day
-        if (i > daysPad) {
-            // Add date on block
-            div.innerHTML = i - daysPad;
-
-            const event = events.find(x => x.date === dateStr);
-
-            // const event = 
-            // Add a class to the current day
-            if (nav === 0 && i - daysPad === day) {
-                div.classList.add('dayCur');
-            }
-
-            // If there is an event in th day, add to the day square
-            if (event) {
-               const divEvent = document.createElement('div');
-               divEvent.classList.add('event');
-               divEvent.innerText = event.event;
-               div.appendChild(divEvent);
-            }
-
-            // Add click event to create new event
-            div.addEventListener('click', () => {
-                formOpen(dateStr);
-            });
-        } else {
-            div.classList.add('padding-day');
+    async initDB() {
+        this.db = new D
+    }
+    async render() {
+        const date = new Date();
+        events = fetchEvents.get();
+        events = await events.then(x => x);
+        if (nav !== 0) {
+            // Set to the new month based on nav
+            date.setMonth(new Date().getMonth() + nav);
         }
-        calendar.appendChild(div);
+
+        const day = date.getDate();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+
+        // Find the first day of month
+        const monthFirstDay = new Date(year, month, 1);
+
+        // Number of days in a month
+        const monthDays = new Date(year, month + 1, 0).getDate();
+
+        // string: "Weekdays, dd/mm/yyyy"
+        const fullDate = monthFirstDay.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+
+        // Number of padding days in a month
+        const daysPad = weekdays.indexOf(fullDate.split(', ')[0]);
+
+        // Display the month on the current calendar
+        document.getElementById('monthText').innerText = ` ${date.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
+
+        // Refresh calendar blocks
+        calendar.innerHTML = '';
+
+        // Render the calendar squares
+        for (let i = 1; i <= daysPad + monthDays; i++) {
+            const div = document.createElement('div');
+            div.classList.add('day');
+
+            const dateStr = `${month + 1}/${i - daysPad}/${year}`;
+
+            // Filter padding days from actual day
+            if (i > daysPad) {
+                // Add date on block
+                div.innerHTML = i - daysPad;
+
+                const event = events.find(x => x.date === dateStr);
+
+                // const event = 
+                // Add a class to the current day
+                if (nav === 0 && i - daysPad === day) {
+                    div.classList.add('dayCur');
+                }
+
+                // If there is an event in th day, add to the day square
+                if (event) {
+                    const divEvent = document.createElement('div');
+                    divEvent.classList.add('event');
+                    divEvent.innerText = event.event;
+                    div.appendChild(divEvent);
+                }
+
+                // Add click event to create new event
+                div.addEventListener('click', () => {
+                    formOpen(dateStr);
+                });
+            } else {
+                div.classList.add('padding-day');
+            }
+            calendar.appendChild(div);
+        }
     }
 }
+
+const renderCalendar = new Calendar();
+
 
 function button() {
     document.getElementById('next').addEventListener('click', () => {
         // Increment nav to navigate to one month later
         nav++;
-        render();
+        renderCalendar.render();
     });
 
     document.getElementById('back').addEventListener('click', () => {
         // Decrement nav to navigate to one month earlier 
         nav--;
-        render();
+        renderCalendar.render();
     });
 
     // Add clicked event to the save button -> save event
@@ -187,7 +202,9 @@ function button() {
 
     // Add clicked event to the delete button -> event deletion 
     document.getElementById('delete').addEventListener('click', eventDelete);
+
+    document.getElementById('refresh').addEventListener('click', renderCalendar.render);
 }
 
 button();
-render();
+renderCalendar.render();

@@ -1,13 +1,14 @@
 import express from 'express';
 import logger from 'morgan';
+import bp from 'body-parser'
 import { Database } from './database.js';
-
-const DATABASE_URL = "postgres://jegbssbvkhyjdl:0e2c7ce25fa24f96cb65d0b3dc74604f9e0914e975b8bcfa0d6b040a10312ab8@ec2-54-87-179-4.compute-1.amazonaws.com:5432/datvauq86hv760";
-
+import {DATABASE_URL} from '../database_url'
 class Server {
     constructor(dburl) {
         this.dburl = dburl;
         this.app = express();
+        this.app.use(bp.urlencoded({ extended: false }));
+        this.app.use(bp.json());
     }
 
     async initRoutes() {
@@ -15,10 +16,14 @@ class Server {
 
         this.app.post('/createEvent', async (request, response) => {
             try {
+                
                 const { name, date } = request.body;
+                console.log(name);
+                console.log(date);
                 await self.db.createEvent(name, date);
                 response.status(200).json({ status: "success" });
             } catch (err) {
+                
                 response.status(404).json({ status: "failed" });
             }
         });
@@ -66,7 +71,8 @@ server.start();
 
 // // TODO #4: Implement the /wordScore endpoint
 // app.post('/createEvent', async (request, response) => {
-//   const { name, word, score } = request.body;
+//   const { name, date } = request.body;
+//   console.log(request.body);
 // //   await database.saveWordScore(name, word, score);
 //   response.status(200).json({ status: 'success' });
 // });
