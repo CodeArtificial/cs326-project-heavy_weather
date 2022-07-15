@@ -11,7 +11,11 @@ let clickEvent = null;
 // let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 
 
-let events = fetchEvents.get();
+// let events = fetchEvents.get();
+// events = await events.then(x => x);
+// console.log(events);
+
+let events = null;
 
 
 
@@ -24,29 +28,6 @@ const form = document.getElementById('form');
 const newEvent = document.getElementById('newEvent');
 const eventTitle = document.getElementById('eventTitle');
 const deleteEvent = document.getElementById('deleteEvent');
-
-function formOpen(date) {
-    // Set the click event on the date
-    clickEvent = date;
-
-    // Find the event created based on date
-    const event = events.find(x => x.date === clickEvent);
-
-    // If the event already exist in that date
-    if (event) {
-
-        document.getElementById('event').innerText = event.event;
-
-        // Display deleting the existed form
-        deleteEvent.style.display = 'block';
-
-    } else { // Display the new event form
-        newEvent.style.display = 'block';
-    }
-
-    // Display the form
-    form.style.display = 'block';
-}
 
 // Function that change the display of the form upon completion
 function formClose() {
@@ -66,46 +47,40 @@ function formClose() {
     renderCalendar.render();
 }
 
-// Function to save event to local storage
-function eventSave() {
-    if (eventTitle.value) { // there is an input to the event prompt
-        // Delete error code 400
-        eventTitle.classList.remove('400');
-        // Push to the events array
-        events.push({ date: clickEvent, event: eventTitle.value });
-        // Save to the local storage
-        localStorage.setItem('events', JSON.stringify(events));
-        formClose();
-    } else { // there is no input
-        // Add error code 400
-        eventTitle.classList.add('400');
-
-    }
-}
-
-// Function to delete an event from the calendar
-function eventDelete() {
-    // Filter the deleted event out of the events array
-    events = events.filter(x => x.date !== clickEvent);
-    // Save the events array to local storage
-    localStorage.setItem('events', JSON.stringify(events));
-    formClose();
-
-}
 
 // Function to render the page
 class Calendar {
-    constructor(dburl) {
-        this.dburl = dburl;
+    // Function to delete an event from the calendar
+    async eventDelete() {
+        this.events = await fetchEvents.get();
+
+        // Filter the deleted event out of the events array
+        const event = this.events.filter(x => x.date === clickEvent);
+        await fetchEvents.delete(event[0].event, event[0].date);
+        formClose();
+
     }
 
-    async initDB() {
-        this.db = new D
+    // Function to save event to local storage
+    async eventSave() {
+        this.events = await fetchEvents.get();
+        if (eventTitle.value) { // there is an input to the event prompt
+            // Delete error code 400
+            eventTitle.classList.remove('400');
+            console.log(eventTitle.value);
+            await fetchEvents.create(eventTitle.value, clickEvent);
+            formClose();
+        } else { // there is no input
+            // Add error code 400
+            eventTitle.classList.add('400');
+
+        }
     }
+
     async render() {
         const date = new Date();
-        events = fetchEvents.get();
-        events = await events.then(x => x);
+        this.events = await fetchEvents.get();
+
         if (nav !== 0) {
             // Set to the new month based on nav
             date.setMonth(new Date().getMonth() + nav);
@@ -145,7 +120,7 @@ class Calendar {
                 // Add date on block
                 div.innerHTML = i - daysPad;
 
-                const event = events.find(x => x.date === dateStr);
+                const event = this.events.find(x => x.date === dateStr);
 
                 // const event = 
                 // Add a class to the current day
@@ -163,7 +138,7 @@ class Calendar {
 
                 // Add click event to create new event
                 div.addEventListener('click', () => {
-                    formOpen(dateStr);
+                    this.formOpen(dateStr);
                 });
             } else {
                 div.classList.add('padding-day');
@@ -171,6 +146,34 @@ class Calendar {
             calendar.appendChild(div);
         }
     }
+
+    async formOpen(date) {
+        this.events = await fetchEvents.get();
+
+        // Set the click event on the date
+        clickEvent = date;
+
+        // Find the event created based on date
+        const event = this.events.find(x => x.date === clickEvent);
+
+        // If the event already exist in that date
+        if (event) {
+
+            document.getElementById('event').innerText = event.event;
+
+            // Display deleting the existed form
+            deleteEvent.style.display = 'block';
+
+        } else { // Display the new event form
+            newEvent.style.display = 'block';
+        }
+
+        // Display the form
+        form.style.display = 'block';
+    }
+
+
+    
 }
 
 const renderCalendar = new Calendar();
@@ -190,7 +193,7 @@ function button() {
     });
 
     // Add clicked event to the save button -> save event
-    document.getElementById('save').addEventListener('click', eventSave);
+    document.getElementById('save').addEventListener('click', renderCalendar.eventSave);
 
     // Add clicked event to the cancel button -> close form
     document.getElementById('cancel').addEventListener('click', formClose);
@@ -199,7 +202,7 @@ function button() {
     document.getElementById('close').addEventListener('click', formClose);
 
     // Add clicked event to the delete button -> event deletion 
-    document.getElementById('delete').addEventListener('click', eventDelete);
+    document.getElementById('delete').addEventListener('click', renderCalendar.eventDelete);
 
     document.getElementById('refresh').addEventListener('click', renderCalendar.render);
 }

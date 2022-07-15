@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { request } from 'express';
 import logger from 'morgan';
 import bp from 'body-parser'
 import { Database } from './database.js';
@@ -16,14 +16,21 @@ class Server {
 
         this.app.post('/createEvent', async (request, response) => {
             try {
-                
-                const { name, date } = request.body;
-                console.log(name);
-                console.log(date);
-                await self.db.createEvent(name, date);
+                console.log(request.body);
+                const { event, date } = request.body;
+                await self.db.createEvent(event, date);
                 response.status(200).json({ status: "success" });
             } catch (err) {
                 
+                response.status(404).json({ status: "failed" });
+            }
+        });
+
+        this.app.delete('/deleteEvent', async (request, response) => {
+            try {
+                const {event, date} = request.body; 
+                await self.db.deleteEvent(event, date);
+            } catch (err) {
                 response.status(404).json({ status: "failed" });
             }
         });
@@ -36,7 +43,18 @@ class Server {
                 response.status(404).json({ status: "failed" });
             }
         });
+
+        this.app.delete('/deleteAllEvent', async (request, response) => {
+            try {
+                const events = await self.db.deleteAllEvent();
+                response.status(200).json(events);
+            } catch (err) {
+                response.status(404).json({ status: "failed" });
+            }
+        });
     }
+
+
 
     async initDB() {
         this.db = new Database(this.dburl);

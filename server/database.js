@@ -34,6 +34,8 @@ export class Database {
     }
 
     async createEvent(event, date) {
+        console.log(event);
+        console.log(date);
         const queryText = 'INSERT INTO event_record (event, date) VALUES ($1, $2) RETURNING *';
         const response = await this.client.query(queryText, [event, date]);
         console.log("hello");
@@ -52,9 +54,9 @@ export class Database {
         return respond.rows;
     }
 
-    async deleteEvent(event) {
-        const queryText = 'DELETE FROM event_record WHERE event = $1 RETURNING *';
-        const respond = await this.client.query(queryText, [event]);
+    async deleteEvent(event, date) {
+        const queryText = 'DELETE FROM event_record WHERE event = $1 AND date = $2 RETURNING *';
+        const respond = await this.client.query(queryText, [event, date]);
         return respond.rows;
     }
 
@@ -68,5 +70,11 @@ export class Database {
         const queryText = 'SELECT * FROM event_record';
         const respond = await this.client.query(queryText);
         return respond.rows;
+    }
+
+    async deleteAllEvent() {
+        const queryText = 'DELETE FROM event_record';
+        const respond = await this.client.query(queryText);
+        return respond.rows; 
     }
 }
