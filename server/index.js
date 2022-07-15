@@ -1,4 +1,4 @@
-import express, { request } from 'express';
+import express, { request, response } from 'express';
 import logger from 'morgan';
 import bp from 'body-parser'
 import { Database } from './database.js';
@@ -30,6 +30,24 @@ class Server {
             try {
                 const {event, date} = request.body; 
                 await self.db.deleteEvent(event, date);
+            } catch (err) {
+                response.status(404).json({ status: "failed" });
+            }
+        });
+
+        this.app.put('/updateEventName', async (request, response) => {
+            try{
+                const {event, date} = request.body; 
+                await self.db.updateEventName(event, date);
+            } catch (err) {
+                response.status(404).json({ status: "failed" });
+            }
+        });
+
+        this.app.put('/updateEventDate', async (request, response) => {
+            try{
+                const {event, date} = request.body; 
+                await self.db.updateEventDate(event, date);
             } catch (err) {
                 response.status(404).json({ status: "failed" });
             }
