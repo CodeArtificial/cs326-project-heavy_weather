@@ -30,6 +30,7 @@ class Server {
             try {
                 const {event, date} = request.body; 
                 await self.db.deleteEvent(event, date);
+                response.status(200).json({ status: "success" });
             } catch (err) {
                 response.status(404).json({ status: "failed" });
             }
@@ -39,6 +40,7 @@ class Server {
             try{
                 const {event, date} = request.body; 
                 await self.db.updateEventName(event, date);
+                response.status(200).json({ status: "success" });
             } catch (err) {
                 response.status(404).json({ status: "failed" });
             }
@@ -48,6 +50,7 @@ class Server {
             try{
                 const {event, date} = request.body; 
                 await self.db.updateEventDate(event, date);
+                response.status(200).json({ status: "success" });
             } catch (err) {
                 response.status(404).json({ status: "failed" });
             }
