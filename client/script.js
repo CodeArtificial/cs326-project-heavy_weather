@@ -1,6 +1,4 @@
 import { fetchEvents } from './calendar.js';
-import {DATABASE_URL} from '../database_url.js';
-import {Database} from '../server/database.js';
 
 // Navigation for the calendar depending on the month
 // +# = later months, 0 = current month, -# = previous months
