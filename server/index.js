@@ -2,7 +2,7 @@ import express from 'express';
 import logger from 'morgan';
 import bp from 'body-parser'
 import { Database } from './database.js';
-import {DATABASE_URL} from '../database_url'
+import {DATABASE_URL} from '../database_url.js'
 class Server {
     constructor(dburl) {
         this.dburl = dburl;
