@@ -77,6 +77,31 @@ class Calendar {
         }
     }
 
+    async formOpen(date) {
+        this.events = await fetchEvents.get();
+
+        // Set the click event on the date
+        clickEvent = date;
+
+        // Find the event created based on date
+        const event = this.events.find(x => x.date === clickEvent);
+
+        // If the event already exist in that date
+        if (event) {
+
+            document.getElementById('event').innerText = event.event;
+
+            // Display deleting the existed form
+            deleteEvent.style.display = 'block';
+
+        } else { // Display the new event form
+            newEvent.style.display = 'block';
+        }
+
+        // Display the form
+        form.style.display = 'block';
+    }
+
     async render() {
         const date = new Date();
         this.events = await fetchEvents.get();
@@ -145,31 +170,6 @@ class Calendar {
             }
             calendar.appendChild(div);
         }
-    }
-
-    async formOpen(date) {
-        this.events = await fetchEvents.get();
-
-        // Set the click event on the date
-        clickEvent = date;
-
-        // Find the event created based on date
-        const event = this.events.find(x => x.date === clickEvent);
-
-        // If the event already exist in that date
-        if (event) {
-
-            document.getElementById('event').innerText = event.event;
-
-            // Display deleting the existed form
-            deleteEvent.style.display = 'block';
-
-        } else { // Display the new event form
-            newEvent.style.display = 'block';
-        }
-
-        // Display the form
-        form.style.display = 'block';
     }
 
 
